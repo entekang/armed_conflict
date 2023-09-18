@@ -3,9 +3,9 @@
     "path": "~/Desktop/Ente's Files/Uoft/Uoft Courses/UofT Fall 23/CHL7001/Week 2/armed_conflict/inclass.R",
     "project_path": "inclass.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "1089897163",
     "contents": "",
-    "dirty": true,
+    "dirty": false,
     "created": 1695046992354.0,
     "source_on_save": false,
     "relative_order": 1,
@@ -17,11 +17,11 @@
         "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1695049511,
+    "lastKnownWriteTime": 1695049741,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1695049514744,
+    "last_content_update": 1695049741735,
     "read_only": false,
     "read_only_alternatives": []
 }
