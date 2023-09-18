@@ -1,12 +1,12 @@
 {
-    "id": "C1CE1D38",
-    "path": "~/Desktop/Ente's Files/Uoft/Uoft Courses/UofT Fall 23/CHL7001/Week 2/armed_conflict/inclass.R",
-    "project_path": "inclass.R",
+    "id": "EDEC9E7F",
+    "path": "~/Desktop/Ente's Files/Uoft/Uoft Courses/UofT Fall 23/CHL7001/Week 2/armed_conflict/disaster.R",
+    "project_path": "disaster.R",
     "type": "r_source",
-    "hash": "1089897163",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1695046992354.0,
+    "created": 1695049871240.0,
     "source_on_save": false,
     "relative_order": 1,
     "properties": {
@@ -17,11 +17,11 @@
         "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1695049741,
+    "lastKnownWriteTime": 1695050727,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1695049741735,
+    "last_content_update": 1695050727286,
     "read_only": false,
     "read_only_alternatives": []
 }
