@@ -20,3 +20,5 @@ conf_clean <- subset(conf_clean, select = -c(n))
 final_data <- mort_data %>% left_join(disaster, by = c("ISO", "Year")) %>% 
   left_join(conf_clean, by= join_by(ISO==ISO, Year==year)) %>% 
   inner_join(cov, by = join_by(ISO==ISO, Year==year))
+
+write.csv(final_data, file = "data/original/finalmerged_data.csv")
