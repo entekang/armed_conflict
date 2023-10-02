@@ -19,6 +19,11 @@ conf_clean <- subset(conf_clean, select = -c(n))
 
 final_data <- mort_data %>% left_join(disaster, by = c("ISO", "Year")) %>% 
   left_join(conf_clean, by= join_by(ISO==ISO, Year==year)) %>% 
-  inner_join(cov, by = join_by(ISO==ISO, Year==year))
+  inner_join(cov, by = join_by(ISO==ISO, Year==year)) 
+
+final_data$drought[is.na(final_data$drought)] <- 0
+final_data$earthquake[is.na(final_data$earthquake)] <- 0
+final_data$armed_conflict[is.na(final_data$armed_conflict)] <- 0
+
 
 write.csv(final_data, file = "data/original/finalmerged_data.csv")

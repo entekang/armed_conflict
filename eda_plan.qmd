@@ -1,0 +1,41 @@
+---
+title: "EDA plan"
+format: html
+editor: visual
+---
+
+## Glimpse of the data
+
+* First few 
+* Last few 
+* Random selection
+
+```{r, echo=FALSE, message=F, warning=F}
+library(tidyverse)
+df <- read.csv("data/original/finalmerged_data.csv")
+head(df)
+tail(df)
+df %>% slice_sample(n=6)
+```
+
+
+The idea is to quickly see if there are any immediate obvious errors
+
+## A more detailed look
+
+* Structure of the data - variables coded correctly? 
+* Summary statistics 
+* How many missing values?
+```{r}
+glimpse(df)
+str(df)
+summary(df)
+```
+
+
+## Visualizations
+
+* Response vs. explanatory variables 
+* With and without oddly behaving points
+
+## Basic models

@@ -29,7 +29,7 @@ maternal <- read.csv("data/original/maternalmortality.csv")
 merge_mortdata <- function(dinf, dneo, dunder, dmat){
   dl <- list(dinf, dneo, dunder, dmat)
   df_clean <- lapply(dl, cleaner)
-  fulldata <- dl_clean %>% reduce(full_join, by = c("Country.Name", "Year"))
+  fulldata <- df_clean %>% reduce(full_join, by = c("Country.Name", "Year"))
   colnames(fulldata) <- c("Country", "Year", "maternal_mort", "infant_mort", "neonatal_mort", "under5_mort")
   
   full_clean <- fulldata %>% mutate(ISO = countrycode(Country, origin = 'country.name', destination = 'iso3c'))
