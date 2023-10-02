@@ -1,5 +1,6 @@
 
 conf <- read.csv("data/original/conflictdata.csv")
+conf$year <- conf$year + 1
 conf$armed_conflict <- ifelse(conf$best >= 25, 1, 0)
 conf <- subset(conf, select = -c(best))
 

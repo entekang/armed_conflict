@@ -2,6 +2,8 @@
 title: "EDA plan"
 format: html
 editor: visual
+theme: 
+  - lux
 ---
 
 ## Glimpse of the data
@@ -26,16 +28,122 @@ The idea is to quickly see if there are any immediate obvious errors
 * Structure of the data - variables coded correctly? 
 * Summary statistics 
 * How many missing values?
-```{r}
+```{r, echo=F}
 glimpse(df)
 str(df)
 summary(df)
 ```
 
+The variables look to be in the right format. However, I will binary code armed_conflict which makes the plotting more simple when I use this variable.
+
+```{r, echo=FALSE}
+df$armed_conflict <- factor(df$armed_conflict)
+```
+
+There are quite a few missing values for the response variables along with explanatory variables.
 
 ## Visualizations
 
 * Response vs. explanatory variables 
 * With and without oddly behaving points
 
+```{r, echo=F}
+df %>% ggplot(aes(x = maternal_mort)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Maternal Mortality"
+  )
+
+df %>% ggplot(aes(x = neonatal_mort)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Neonatal Mortality"
+  )
+
+df %>% ggplot(aes(x = under5_mort)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Under 5 Mortality"
+  )
+
+```
+
+The distribution of the mortality variables are very right skewed, i.e., not normal dist.  
+
+```{r, echo=FALSE}
+ggplot(df, aes(x=armed_conflict, y=maternal_mort)) +
+  geom_boxplot() +
+  theme_classic()
+
+ggplot(df, aes(x=armed_conflict, y=under5_mort)) +
+  geom_boxplot() +
+  theme_classic()
+
+ggplot(df, aes(x=armed_conflict, y=neonatal_mort)) +
+  geom_boxplot() +
+  theme_classic()
+ggplot(df, aes(x=armed_conflict, y=infant_mort)) +
+  geom_boxplot() +
+  theme_classic()
+```
+
+It appears that the mortality rates are higher for countries suffering from armed conflicts.
+
+Lets see the trend over time, for now we'll take a look at Afghanistan. 
+
+```{r, echo=FALSE}
+df %>% filter(ISO == "AFG") %>% ggplot(aes(x=Year, y=maternal_mort))+
+  geom_line()
+
+ggplot(df, aes(x=Year, y=log(maternal_mort))) + 
+  geom_line(aes(group=ISO)) +
+  facet_wrap(~armed_conflict)
+
+ggplot(df, aes(x=Year, y=log(infant_mort))) + 
+  geom_line(aes(group=ISO))+
+  facet_wrap(~armed_conflict)
+
+ggplot(df, aes(x=Year, y=log(neonatal_mort))) + 
+  geom_line(aes(group=ISO))+
+  facet_wrap(~armed_conflict)
+
+ggplot(df, aes(x=Year, y=log(under5_mort))) + 
+  geom_line(aes(group=ISO))+
+  facet_wrap(~armed_conflict)
+```
+
+In general, regardless of which mortality we look at, it seems to be trending downwards, which is a good sign. It's worth noting that the mortality rate seems to be fluctuating a bit for some country, however there are very few occurrences of this. In the above time-series plots, I did a log transformation on mortality, as many of the lines were clumped together.  
+
+I also considered faceting by armed_conflict status. We see that the mortality is still trending downwards, however the mortality rate is higher for those countries that are dealing with armed conflict.
+
+```{r}
+ggplot(df, aes(x=popdens, y=maternal_mort, col=armed_conflict))+
+  geom_point()
+```
+
+It does not seem that armed conflict and population density are interacting with each other to affect maternal mortality.
+
 ## Basic models
+
+* For now, consider just dropping all the missing values
+
+```{r}
+df <- df %>% drop_na()
+```
+
+
+```{r, echo=F}
+m1 <- lm(maternal_mort ~ armed_conflict, data = df)
+summary(m1)
+plot(m1)
+
+m2 <- lm(maternal_mort ~ armed_conflict+drought+earthquake+region+GDP+OECD+OECD2023+popdens+urban+agedep+male_edu+temp, data = df)
+summary(m2)
+plot(m2)
+```
+
+There is a bit of a pattern in the residuals, so maybe some transformations may be helpful.  
+In general, we see that armed_conflict does have a significant effect on maternal mortality in both the full and reduced model. This suggests that there could be differences in mortality due to whether a country is facing conflicts.
