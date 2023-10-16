@@ -9,43 +9,52 @@ date: "2023-10-16"
 library(tidyverse)
 library(table1)
 
-d <- read_csv("data/original/finalmerged_data.csv")[-1]
+# d <- read_csv("data/original/finalmerged_data.csv")[-1]
+d <- read_csv("data/original/finaldata.csv")
 
-d2 <- d %>% filter(Year == 2000)
+d2 <- d %>% filter(year == 2000)
 d2$OECD <- factor(d2$OECD)
-d2$armed_conflict <- factor(d2$armed_conflict, levels = c(0, 1), labels = c("No Conflict", "Conflict"))
+d2$armconf1 <- factor(d2$armconf1, levels = c(0, 1), labels = c("No Conflict", "Conflict"))
 
 d2$drought <- factor(d2$drought, levels = c(0, 1), labels = c("No Drought", "Drought"))
 d2$earthquake <- factor(d2$earthquake, levels = c(0, 1), labels = c("No Earthquake", "Earthquake"))
 d2$OECD <- factor(d2$OECD, levels = c(0, 1), labels = c("No OECD", "OECD"))
 
 
-label(d2$maternal_mort) <- "Maternal Mortality"
+label(d2$matmor) <- "Maternal Mortality"
 label(d2$drought) <- "Drought"
 label(d2$earthquake) <- "Earthquake"
-label(d2$armed_conflict) <- "Armed Conflict"
+label(d2$armconf1) <- "Armed Conflict"
 label(d2$popdens) <- "Population Density"
 label(d2$agedep) <- "Age Dependency Ratio"
 label(d2$male_edu) <- "Male Education"
 label(d2$temp) <- "Temperature"
 label(d2$urban) <- "% living in urban residence"
 
-table1(~.-Year-ISO-country_name-OECD2023-region-infant_mort-neonatal_mort-under5_mort|armed_conflict, data = d2, caption = "Summary statistics for the year 2000") #take off region, bin code oecd, remove
+table1(~.-year-ISO-country_name-OECD2023-region-infant_mort-neonatal_mort-under5_mort|armconf1, data = d2, caption = "Summary statistics for the year 2000") #take off region, bin code oecd, remove
                         # oecd2023
 ```
 
-```{r, echo=FALSE}
-d3 <- d %>% group_by(ISO) %>% arrange(Year) %>% filter(row_number() %in% c(1, n())) %>% select(c(Year, maternal_mort, ISO)) %>% ungroup()
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# d3 <- d %>% group_by(ISO) %>% arrange(Year) %>% filter(row_number() %in% c(1, 18)) %>% select(c(Year, maternal_mort, ISO)) %>% ungroup()
+# 
+# d4 <- d3 %>% arrange(ISO) 
+# 
+# d5 <- d4 %>% group_by(ISO) %>% mutate(diffs = maternal_mort - lag(maternal_mort)) %>% drop_na() %>% filter(diffs > 0 ) %>% select(ISO)
 
-d4 <- d3 %>% arrange(ISO) 
 
-d5 <- d4 %>% group_by(ISO) %>% mutate(diffs = maternal_mort - lag(maternal_mort)) %>% drop_na() %>% filter(diffs > 0 ) %>% select(ISO)
+dfinal <- d |>
+  dplyr::select(country_name, ISO, year, matmor) |>
+  dplyr::filter(year < 2018) |>
+  arrange(ISO, year) |>
+  group_by(ISO) |>
+  mutate(diffmatmor = matmor- matmor[1L])
 
-# %>% slice(1) %>% ungroup()
+dfinal <- dfinal %>% filter(year == 2017 & diffmatmor > 0)
 
 # uniq_names <- unique(d %>% filter(ISO %in% d5$ISO) %>% select(ISO, country_name))
 
-d %>% filter(ISO %in% d5$ISO) %>% ggplot(aes(x = Year, y=maternal_mort, col=ISO))+
+d %>% filter(ISO %in% dfinal$ISO) %>% ggplot(aes(x = year, y=matmor, col=ISO))+
   geom_line(aes(group=ISO)) + 
   theme_minimal() + 
   labs(title = "Countries with increasing maternal mortality", y = "Maternal Mortality Ratio")
