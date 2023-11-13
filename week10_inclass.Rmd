@@ -1,0 +1,59 @@
+---
+title: "week10_inclass"
+output: html_document
+date: "2023-11-13"
+---
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+library(boot)
+library(kableExtra)
+df <- read.csv("data/original/finaldata.csv")
+df <- df %>% filter(year == 2017) %>% filter(!is.na(matmor) & !is.na(infmor) & !is.na(neomor) & !is.na(un5mor))
+
+set.seed(16)
+
+mortdif <- function(data, indices) {
+  sample_data <- data[indices, ]
+  group_medsmat <- tapply(sample_data$matmor, sample_data$armconf1, FUN = median)
+  group_medsinf <- tapply(sample_data$infmor, sample_data$armconf1, FUN = median)
+  group_medsneo <- tapply(sample_data$neomor, sample_data$armconf1, FUN = median)
+  group_medsun5 <- tapply(sample_data$un5mor, sample_data$armconf1, FUN = median)
+  
+  
+  meddiffmat <- group_medsmat[2] - group_medsmat[1]
+  meddiffinf <- group_medsinf[2] - group_medsinf[1]
+  meddiffneo <- group_medsneo[2] - group_medsneo[1]
+  meddiffun5 <- group_medsun5[2] - group_medsun5[1]
+  return(c(meddiffmat, meddiffinf, meddiffneo, meddiffun5))
+}
+
+
+
+bootout <- boot(df, statistic = mortdif, strata = df$armconf1, R = 1000)
+# bootout
+
+mortci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 1)
+mortcival <- paste0("[", mortci$bca[4], ", ",mortci$bca[5], "]")
+
+infci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 2)
+infcival <- paste0("[", infci$bca[4], ", ",infci$bca[5], "]")
+
+neoci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 3)
+neocival <- paste0("[", neoci$bca[4], ", ",neoci$bca[5], "]")
+
+un5ci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 4)
+un5cival <- paste0("[", un5ci$bca[4], ", ",un5ci$bca[5], "]")
+
+meds <- bootout$t0
+
+name <- c("Maternal Mortality", "Infant Mortality", "Neonatal Mortality", "Under5 Mortality")
+
+sumtable <- tibble( names = name, medians = meds, cis = c(mortcival, infcival, neocival, un5cival))
+  
+colnames(sumtable) <- c("Mortality", "Difference in Median", "bca 95% CI")
+
+sumtable %>% kbl(caption = "Difference in medians for mortality in 2017") %>% kable_material_dark() %>% 
+  footnote(general = "The sample size was 182 countries, as 4 countries had missing mortality values")
+```
+
