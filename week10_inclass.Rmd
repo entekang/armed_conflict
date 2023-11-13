@@ -25,7 +25,7 @@ mortdif <- function(data, indices) {
   meddiffinf <- group_medsinf[2] - group_medsinf[1]
   meddiffneo <- group_medsneo[2] - group_medsneo[1]
   meddiffun5 <- group_medsun5[2] - group_medsun5[1]
-  return(c(meddiffmat, meddiffinf, meddiffneo, meddiffun5))
+  return(round(c(meddiffmat, meddiffinf, meddiffneo, meddiffun5)))
 }
 
 
@@ -34,16 +34,16 @@ bootout <- boot(df, statistic = mortdif, strata = df$armconf1, R = 1000)
 # bootout
 
 mortci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 1)
-mortcival <- paste0("[", mortci$bca[4], ", ",mortci$bca[5], "]")
+mortcival <- paste0("[", round(mortci$bca[4]), ", ",round(mortci$bca[5]), "]")
 
 infci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 2)
-infcival <- paste0("[", infci$bca[4], ", ",infci$bca[5], "]")
+infcival <- paste0("[", round(infci$bca[4]), ", ",round(infci$bca[5]), "]")
 
 neoci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 3)
-neocival <- paste0("[", neoci$bca[4], ", ",neoci$bca[5], "]")
+neocival <- paste0("[", round(neoci$bca[4]), ", ",round(neoci$bca[5]), "]")
 
 un5ci <- boot.ci(boot.out = bootout, conf = 0.95, type = "bca", index = 4)
-un5cival <- paste0("[", un5ci$bca[4], ", ",un5ci$bca[5], "]")
+un5cival <- paste0("[", round(un5ci$bca[4]), ", ",round(un5ci$bca[5]), "]")
 
 meds <- bootout$t0
 
